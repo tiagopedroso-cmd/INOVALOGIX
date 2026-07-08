@@ -4,11 +4,19 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatBRL, formatDateBR } from "@/lib/format";
 import { PROJETO_STATUS_META, PROJETO_STATUS_ORDER } from "@/lib/labels";
+import { EditarProjetoButton } from "@/components/forms/editar-projeto-button";
+import { DeleteButton } from "@/components/delete-button";
 import type { Projeto, ProjetoStatus } from "@/types/database";
 
 export function ProjectBoard({ projetos: initial }: { projetos: Projeto[] }) {
   const [projetos, setProjetos] = useState(initial);
+  const [prevInitial, setPrevInitial] = useState(initial);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    setProjetos(initial);
+  }
 
   async function moveTo(id: string, status: ProjetoStatus) {
     setProjetos((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
@@ -50,6 +58,18 @@ export function ProjectBoard({ projetos: initial }: { projetos: Projeto[] }) {
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-[13.5px] font-bold leading-tight">{c.nome}</span>
+                  <div draggable={false} className="flex flex-none items-center gap-0.5">
+                    <EditarProjetoButton projeto={c} />
+                    <DeleteButton
+                      table="projetos"
+                      id={c.id}
+                      label={c.nome}
+                      className="grid h-6 w-6 place-items-center rounded-md text-muted hover:bg-red-light hover:text-red"
+                    />
+                  </div>
+                </div>
+                <div className="my-1 flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted">{c.cliente?.nome ?? "—"}</span>
                   <span
                     className="whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold"
                     style={{ color: meta.color, background: meta.tint }}
@@ -57,7 +77,6 @@ export function ProjectBoard({ projetos: initial }: { projetos: Projeto[] }) {
                     {meta.tag}
                   </span>
                 </div>
-                <div className="my-1 text-xs text-muted">{c.cliente?.nome ?? "—"}</div>
                 <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-[#EEF2F3]">
                   <div className="h-full rounded-full" style={{ width: `${c.progresso}%`, background: meta.color }} />
                 </div>

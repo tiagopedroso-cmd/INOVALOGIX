@@ -6,6 +6,9 @@ import { PAGAR_STATUS_META, RECEBER_STATUS_META } from "@/lib/labels";
 import { BarsChart } from "@/components/charts/bars-chart";
 import { NovaContaPagarButton } from "@/components/forms/nova-conta-pagar-button";
 import { NovaContaReceberButton } from "@/components/forms/nova-conta-receber-button";
+import { EditarContaPagarButton } from "@/components/forms/editar-conta-pagar-button";
+import { EditarContaReceberButton } from "@/components/forms/editar-conta-receber-button";
+import { DeleteButton } from "@/components/delete-button";
 import type { ContaPagar, ContaReceber, VwPagarResumo, VwReceberResumo, VwFluxoMensal } from "@/types/database";
 
 type Tab = "pagar" | "receber" | "fluxo";
@@ -133,6 +136,7 @@ export function FinanceiroTabs({
                 <th className="border-b border-[#EEF2F3] px-2.5 py-4 text-left text-[11px] font-bold uppercase tracking-wide text-muted">Vencimento</th>
                 <th className="border-b border-[#EEF2F3] px-2.5 py-4 text-right text-[11px] font-bold uppercase tracking-wide text-muted">Valor</th>
                 <th className="border-b border-[#EEF2F3] px-2.5 py-4 text-right text-[11px] font-bold uppercase tracking-wide text-muted">Status</th>
+                <th className="border-b border-[#EEF2F3] px-2.5 py-4 text-right text-[11px] font-bold uppercase tracking-wide text-muted">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -164,6 +168,12 @@ export function FinanceiroTabs({
                             {meta.label}
                           </span>
                         </td>
+                        <td className="border-b border-[#F2F5F6] px-2.5 py-3.5">
+                          <div className="flex items-center justify-end gap-1">
+                            <EditarContaPagarButton conta={r} />
+                            <DeleteButton table="contas_pagar" id={r.id} label={r.descricao} />
+                          </div>
+                        </td>
                       </tr>
                     );
                   })
@@ -193,6 +203,12 @@ export function FinanceiroTabs({
                           <span className="rounded-full px-2.5 py-1 text-[11.5px] font-bold" style={{ color: meta.fg, background: meta.bg }}>
                             {meta.label}
                           </span>
+                        </td>
+                        <td className="border-b border-[#F2F5F6] px-2.5 py-3.5">
+                          <div className="flex items-center justify-end gap-1">
+                            <EditarContaReceberButton conta={r} />
+                            <DeleteButton table="contas_receber" id={r.id} label={r.descricao} />
+                          </div>
                         </td>
                       </tr>
                     );

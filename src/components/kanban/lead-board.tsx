@@ -4,11 +4,19 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatBRL } from "@/lib/format";
 import { CRM_ETAPA_META, CRM_ETAPA_ORDER } from "@/lib/labels";
+import { EditarLeadButton } from "@/components/forms/editar-lead-button";
+import { DeleteButton } from "@/components/delete-button";
 import type { CrmLead, CrmEtapa } from "@/types/database";
 
 export function LeadBoard({ leads: initial }: { leads: CrmLead[] }) {
   const [leads, setLeads] = useState(initial);
+  const [prevInitial, setPrevInitial] = useState(initial);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    setLeads(initial);
+  }
 
   async function moveTo(id: string, etapa: CrmEtapa) {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, etapa } : l)));
@@ -51,7 +59,18 @@ export function LeadBoard({ leads: initial }: { leads: CrmLead[] }) {
                 onDragStart={() => setDraggingId(c.id)}
                 className="cursor-grab rounded-[14px] border border-border bg-white p-3.5 shadow-[0_1px_3px_rgba(16,40,44,.06)]"
               >
-                <div className="text-[13.5px] font-bold leading-tight">{c.empresa}</div>
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[13.5px] font-bold leading-tight">{c.empresa}</span>
+                  <div draggable={false} className="flex flex-none items-center gap-0.5">
+                    <EditarLeadButton lead={c} />
+                    <DeleteButton
+                      table="crm_leads"
+                      id={c.id}
+                      label={c.empresa}
+                      className="grid h-6 w-6 place-items-center rounded-md text-muted hover:bg-red-light hover:text-red"
+                    />
+                  </div>
+                </div>
                 <div className="my-1 truncate text-xs text-muted">{c.nota ?? c.origem ?? ""}</div>
                 <div className="flex items-center justify-between">
                   <span className="font-[family-name:var(--font-display)] text-[13px] font-bold text-primary-dark">
