@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { LeadBoard } from "@/components/kanban/lead-board";
+import { NovoLeadButton } from "@/components/forms/novo-lead-button";
 import type { CrmLead } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -13,12 +14,13 @@ export default async function CrmPage() {
     .returns<CrmLead[]>();
 
   return (
-    <div className="animate-iv-fade px-7 pb-12 pt-7">
+    <div className="animate-iv-fade px-4 pb-8 pt-5 md:px-7 md:pb-12 md:pt-7">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold tracking-tight">CRM · Funil de vendas</h1>
           <p className="mt-1 text-sm text-muted-2">Arraste os leads entre as etapas do funil.</p>
         </div>
+        <NovoLeadButton />
       </div>
 
       <LeadBoard leads={leads ?? []} />

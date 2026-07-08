@@ -4,6 +4,8 @@ import { useState } from "react";
 import { formatBRL, formatDateBR } from "@/lib/format";
 import { PAGAR_STATUS_META, RECEBER_STATUS_META } from "@/lib/labels";
 import { BarsChart } from "@/components/charts/bars-chart";
+import { NovaContaPagarButton } from "@/components/forms/nova-conta-pagar-button";
+import { NovaContaReceberButton } from "@/components/forms/nova-conta-receber-button";
 import type { ContaPagar, ContaReceber, VwPagarResumo, VwReceberResumo, VwFluxoMensal } from "@/types/database";
 
 type Tab = "pagar" | "receber" | "fluxo";
@@ -81,24 +83,28 @@ export function FinanceiroTabs({
 
   return (
     <div>
-      <div className="mb-6 inline-flex gap-1 rounded-full border border-border bg-white p-1">
-        {(
-          [
-            ["pagar", "Contas a Pagar"],
-            ["receber", "Contas a Receber"],
-            ["fluxo", "Fluxo de Caixa"],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`rounded-full px-4.5 py-2 text-[13px] font-semibold transition-colors ${
-              tab === key ? "bg-primary text-white shadow-[0_4px_12px_rgba(18,178,178,.28)]" : "text-muted-2"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex max-w-full gap-1 overflow-x-auto rounded-full border border-border bg-white p-1">
+          {(
+            [
+              ["pagar", "Contas a Pagar"],
+              ["receber", "Contas a Receber"],
+              ["fluxo", "Fluxo de Caixa"],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`flex-none whitespace-nowrap rounded-full px-4.5 py-2 text-[13px] font-semibold transition-colors ${
+                tab === key ? "bg-primary text-white shadow-[0_4px_12px_rgba(18,178,178,.28)]" : "text-muted-2"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {tab === "pagar" && <NovaContaPagarButton />}
+        {tab === "receber" && <NovaContaReceberButton />}
       </div>
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

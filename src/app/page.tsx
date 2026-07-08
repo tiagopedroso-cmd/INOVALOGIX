@@ -5,6 +5,8 @@ import { KpiCard } from "@/components/kpi-card";
 import { AreaChart } from "@/components/charts/area-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { PROJETO_STATUS_META, PROJETO_STATUS_ORDER, CRM_ETAPA_META, CRM_ETAPA_ORDER } from "@/lib/labels";
+import { NovaContaPagarButton } from "@/components/forms/nova-conta-pagar-button";
+import { NovaContaReceberButton } from "@/components/forms/nova-conta-receber-button";
 import type { VwKpis, VwProjetosResumo, VwCrmFunil, VwCaixa } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -71,13 +73,17 @@ export default async function HomePage() {
   const maxCrmValor = Math.max(1, ...CRM_ETAPA_ORDER.map((k) => Number(crmMap.get(k)?.valor_total ?? 0)));
 
   return (
-    <div className="animate-iv-fade px-7 pb-12 pt-7">
+    <div className="animate-iv-fade px-4 pb-8 pt-5 md:px-7 md:pb-12 md:pt-7">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold tracking-tight">
             Bem-vindo de volta 👋
           </h1>
           <p className="mt-1 text-sm text-muted-2">Visão geral</p>
+        </div>
+        <div className="flex flex-wrap gap-2.5">
+          <NovaContaPagarButton className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-white px-4 py-2.5 text-sm font-bold text-[#2B3B41]" />
+          <NovaContaReceberButton className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(18,178,178,.32)]" />
         </div>
       </div>
 

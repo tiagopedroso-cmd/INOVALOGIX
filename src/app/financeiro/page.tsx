@@ -33,7 +33,7 @@ export default async function FinanceiroPage() {
   ]);
 
   return (
-    <div className="animate-iv-fade px-7 pb-12 pt-7">
+    <div className="animate-iv-fade px-4 pb-8 pt-5 md:px-7 md:pb-12 md:pt-7">
       <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold tracking-tight">Financeiro</h1>
       <p className="mb-5 mt-1 text-sm text-muted-2">Contas a pagar, a receber e fluxo de caixa</p>
 

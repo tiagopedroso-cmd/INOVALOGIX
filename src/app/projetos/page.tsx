@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectBoard } from "@/components/kanban/project-board";
+import { NovoProjetoButton } from "@/components/forms/novo-projeto-button";
 import type { Projeto } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -13,12 +14,13 @@ export default async function ProjetosPage() {
     .returns<Projeto[]>();
 
   return (
-    <div className="animate-iv-fade px-7 pb-12 pt-7">
+    <div className="animate-iv-fade px-4 pb-8 pt-5 md:px-7 md:pb-12 md:pt-7">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold tracking-tight">Projetos</h1>
           <p className="mt-1 text-sm text-muted-2">Arraste os cartões entre as colunas para atualizar o status.</p>
         </div>
+        <NovoProjetoButton />
       </div>
 
       <ProjectBoard projetos={projetos ?? []} />
