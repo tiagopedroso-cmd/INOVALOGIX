@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Modal, inputClass, labelClass } from "@/components/modal";
 import { ParceiroSelect } from "@/components/forms/parceiro-select";
 import { ProjetoSelect } from "@/components/forms/projeto-select";
+import { RecorrenciaFields } from "@/components/forms/recorrencia-fields";
+import { gerarDatas, recorrenciaInicial, type RecorrenciaState } from "@/lib/recurrence";
 import type { ReceberStatus } from "@/types/database";
 
 const initialState = {
@@ -22,12 +24,14 @@ export function NovaContaReceberButton({ className }: { className?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initialState);
+  const [rec, setRec] = useState<RecorrenciaState>(recorrenciaInicial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function close() {
     setOpen(false);
     setForm(initialState);
+    setRec(recorrenciaInicial);
     setError(null);
   }
 
@@ -36,15 +40,18 @@ export function NovaContaReceberButton({ className }: { className?: string }) {
     setSaving(true);
     setError(null);
     const supabase = createClient();
-    const { error } = await supabase.from("contas_receber").insert({
+    const repetindo = rec.modo !== "none";
+    const datas = gerarDatas(form.vencimento, rec);
+    const rows = datas.map((vencimento) => ({
       descricao: form.descricao,
       valor: Number(form.valor),
-      vencimento: form.vencimento,
-      status: form.status,
+      vencimento,
+      status: repetindo ? ("aguardando" as ReceberStatus) : form.status,
       cliente_id: form.cliente_id || null,
       projeto_id: form.projeto_id || null,
-      data_recebimento: form.status === "recebido" ? form.data_recebimento || form.vencimento : null,
-    });
+      data_recebimento: !repetindo && form.status === "recebido" ? form.data_recebimento || form.vencimento : null,
+    }));
+    const { error } = await supabase.from("contas_receber").insert(rows);
     setSaving(false);
     if (error) {
       setError("Não foi possível salvar. Tente novamente.");
@@ -86,27 +93,31 @@ export function NovaContaReceberButton({ className }: { className?: string }) {
               <input required type="number" min="0" step="0.01" value={form.valor} onChange={(e) => setForm({ ...form, valor: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Vencimento</label>
+              <label className={labelClass}>Vencimento{rec.modo !== "none" ? " (1ª parcela)" : ""}</label>
               <input required type="date" value={form.vencimento} onChange={(e) => setForm({ ...form, vencimento: e.target.value })} className={inputClass} />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>Status</label>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ReceberStatus })} className={inputClass}>
-                <option value="aguardando">Aguardando</option>
-                <option value="recebido">Recebido</option>
-                <option value="atrasado">Atrasado</option>
-              </select>
-            </div>
-            {form.status === "recebido" && (
+          <RecorrenciaFields value={rec} onChange={setRec} />
+
+          {rec.modo === "none" && (
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Data do recebimento</label>
-                <input type="date" value={form.data_recebimento} onChange={(e) => setForm({ ...form, data_recebimento: e.target.value })} className={inputClass} />
+                <label className={labelClass}>Status</label>
+                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ReceberStatus })} className={inputClass}>
+                  <option value="aguardando">Aguardando</option>
+                  <option value="recebido">Recebido</option>
+                  <option value="atrasado">Atrasado</option>
+                </select>
               </div>
-            )}
-          </div>
+              {form.status === "recebido" && (
+                <div>
+                  <label className={labelClass}>Data do recebimento</label>
+                  <input type="date" value={form.data_recebimento} onChange={(e) => setForm({ ...form, data_recebimento: e.target.value })} className={inputClass} />
+                </div>
+              )}
+            </div>
+          )}
 
           {error && <p className="text-sm font-semibold text-red">{error}</p>}
 
